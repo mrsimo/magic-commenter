@@ -10,13 +10,15 @@ module Magic
     def initialize(files)
       for file in files
         errors = []
-        popen3("ruby -c #{file}") do |stdin, stdout, stderr|
-          errors = stderr.read.split("\n")
-        end
+        puts ". checking #{file}"
+        unless File.readlines(file).first.include?("encoding: utf-8")
+          stdin, stdout, stderr = popen3("ruby -c #{file}")
+          errors = stderr.read
 
-        if errors.any?{|error| error.include?("invalid multibyte char")}
-          puts ">> Fixing #{file}"
-          add_magic_comment(file)
+          if errors.include?("invalid multibyte char")
+            puts ">> Fixing #{file}"
+            add_magic_comment(file)
+          end
         end
       end
     end
