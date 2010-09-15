@@ -8,27 +8,32 @@ module Magic
     include Open3
 
     def initialize(files)
-      for file in files
-        errors = []
-        puts ". checking #{file}"
-        unless File.readlines(file).first.include?("encoding: utf-8")
-          stdin, stdout, stderr = popen3("ruby -c #{file}")
-          errors = stderr.read
+      files.sort!
 
-          if errors.include?("invalid multibyte char")
-            puts ">> Fixing #{file}"
-            add_magic_comment(file)
+      threads = []
+
+      2.times do |i|
+        threads << Thread.new do
+          while(file = files.pop)
+            puts "Thread-#{i}: checking #{file}"
+            unless File.readlines(file).first.include?("encoding: utf-8")
+              stdin, stdout, stderr = popen3("ruby -c #{file}")
+              errors = stderr.read
+
+              if errors.include?("invalid multibyte char")
+                puts ">> Fixing #{file}"
+                contents = "# -*- encoding: utf-8 -*-\n" + File.read(file)
+                File.open(file,"w") do |f|
+                  f.write contents
+                  f.close
+                end
+              end
+            end
           end
         end
       end
-    end
 
-    def add_magic_comment(file)
-      contents = "# -*- encoding: utf-8 -*-\n" + File.read(file)
-      File.open(file,"w") do |f|
-        f.write contents
-        f.close
-      end
+      threads.each(&:join)
     end
 
   end
