@@ -14,13 +14,14 @@ module Magic
 
       2.times do |i|
         threads << Thread.new do
-          while(file = files.pop)
+          while(file = files.shift)
             puts "Thread-#{i}: checking #{file}"
-            unless File.readlines(file).first.include?("encoding: utf-8")
+            firstline = File.readlines(file).first
+            if firstline && !firstline.include?("encoding: utf-8")
               stdin, stdout, stderr = popen3("ruby -c #{file}")
               errors = stderr.read
 
-              if errors.include?("invalid multibyte char")
+              if errors && errors.include?("invalid multibyte char")
                 puts ">> Fixing #{file}"
                 contents = "# -*- encoding: utf-8 -*-\n" + File.read(file)
                 File.open(file,"w") do |f|
