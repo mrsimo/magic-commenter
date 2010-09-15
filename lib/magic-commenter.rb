@@ -1,14 +1,22 @@
+# -*- encoding: utf-8 -*-
+require 'stringio'
+require 'open3'
+
 module Magic
   class Commenter
 
+    include Open3
+
     def initialize(files)
       for file in files
-        result = `ruby -c #{file}`.strip
-        if result != "Syntax OK"
-          if result.include?("invalid multibyte char")
-            puts ">> Fixing #{file}"
-            add_magic_comment(file)
-          end
+        errors = []
+        popen3("ruby -c #{file}") do |stdin, stdout, stderr|
+          errors = stderr.read.split("\n")
+        end
+
+        if errors.any?{|error| error.include?("invalid multibyte char")}
+          puts ">> Fixing #{file}"
+          add_magic_comment(file)
         end
       end
     end
