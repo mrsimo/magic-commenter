@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    magic-commenter (0.0.2)
+    magic-commenter (0.0.3)
 
 GEM
   remote: http://rubygems.org/
