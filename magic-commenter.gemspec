@@ -5,10 +5,9 @@ Gem::Specification.new do |s|
   s.name        = "magic-commenter"
   s.version     = Magic::Commenter::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = []
-  s.email       = []
-  s.summary     = "TODO: Write a gem summary"
-  s.description = "TODO: Write a gem description"
+  s.authors     = ["Albert llop"]
+  s.email       = ["mrsimo@gmail.com"]
+  s.summary     = "Add magic comments to your ruby files"
 
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "magic-commenter"
