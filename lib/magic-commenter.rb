@@ -23,7 +23,7 @@ module Magic
 
               if errors && errors.include?("invalid multibyte char")
                 puts ">> Fixing #{file}"
-                contents = "# -*- encoding: utf-8 -*-\n" + File.read(file)
+                contents = "# encoding: utf-8\n" + File.read(file)
                 File.open(file,"w") do |f|
                   f.write contents
                   f.close
